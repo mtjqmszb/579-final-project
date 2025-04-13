@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Game Rating Recorder</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <h1>Game Rating Recorder</h1>
+
+    <form id="gameForm">
+      <input type="text" id="gameName" placeholder="Game Name" required />
+      <input type="number" id="gameRating" min="0" max="10" placeholder="Rating (0–10)" required />
+      <input type="date" id="startDate" required />
+      <textarea id="reviewNotes" placeholder="Optional review"></textarea>
+      <button type="submit">Add Game</button>
+    </form>
+
+    <div id="sortButtons">
+      <button data-sort="name">Sort by Name</button>
+      <button data-sort="rating">Sort by Rating</button>
+      <button data-sort="date">Sort by Date</button>
+    </div>
+
+    <ul id="gameList"></ul>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
