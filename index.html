@@ -1,30 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Game Rating Recorder</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main>
-    <h1>Game Rating Recorder</h1>
+    <h1>🎮 Game Rating Recorder</h1>
 
     <form id="gameForm">
-      <input type="text" id="gameName" placeholder="Game Name" required />
-      <input type="number" id="gameRating" min="0" max="10" placeholder="Rating (0–10)" required />
-      <input type="date" id="startDate" required />
-      <textarea id="reviewNotes" placeholder="Optional review"></textarea>
-      <button type="submit">Add Game</button>
+      <div>
+        <label for="gameName">Game Name</label>
+        <input type="text" id="gameName" required autocomplete="off" />
+        <small class="error-msg" id="nameError">Required</small>
+      </div>
+
+      <div>
+        <label for="gameRating">Rating (0–10)</label>
+        <input type="number" id="gameRating" min="0" max="10" required />
+        <small class="error-msg" id="ratingError">Must be between 0–10</small>
+      </div>
+
+      <div>
+        <label for="startDate">Start Date</label>
+        <input type="date" id="startDate" required />
+        <small class="error-msg" id="dateError">Required</small>
+      </div>
+
+      <div>
+        <label for="reviewNotes">Review (optional)</label>
+        <textarea id="reviewNotes" rows="3"></textarea>
+      </div>
+
+      <button type="submit" id="addGameBtn">Add Game</button>
     </form>
 
-    <div id="sortButtons">
-      <button data-sort="name">Sort by Name</button>
-      <button data-sort="rating">Sort by Rating</button>
-      <button data-sort="date">Sort by Date</button>
+    <div id="sortControls">
+      <label for="sortSelect">Sort by:</label>
+      <select id="sortSelect">
+        <option value="date">Start Date (Oldest → Newest)</option>
+        <option value="name">Game Name (A → Z)</option>
+        <option value="rating">Rating (High → Low)</option>
+      </select>
     </div>
 
-    <ul id="gameList"></ul>
+    <section>
+      <h2>🎯 Your Game List</h2>
+      <div id="gameListContainer"></div>
+    </section>
   </main>
-  <script src="script.js"></script>
+
+  <script src="script.js" defer></script>
 </body>
 </html>
