@@ -1,3 +1,11 @@
+/**
+ * Interactive Game Rating Recorder
+ * Author: Zichen Jiang (mtjqmszb)
+ * This script enables adding, editing, deleting, and sorting personal game entries.
+ * Entries include game name, rating (0–10), start date, and optional review.
+ * Data is stored in localStorage and displayed using innerHTML rendering.
+ */
+
 // DOM Elements
 const gameForm = document.querySelector('#gameForm');
 const gameNameInput = document.querySelector('#gameName');
@@ -7,16 +15,22 @@ const reviewNotesInput = document.querySelector('#reviewNotes');
 const gameListContainer = document.querySelector('#gameListContainer');
 const sortSelect = document.querySelector('#sortSelect');
 
-// Error message elements
+// Error message elements for validation feedback
 const nameError = document.querySelector('#nameError');
 const ratingError = document.querySelector('#ratingError');
 const dateError = document.querySelector('#dateError');
 
-// Load game list or start empty
+// Load game list from localStorage or initialize empty list
 let gameList = JSON.parse(localStorage.getItem('gameList')) || [];
+
+// ID of game currently being edited (null if adding new)
 let editingId = null;
 
-// Helper: Format date
+/**
+ * Formats a date string into a readable display format.
+ * @param {string} dateStr - ISO date string
+ * @returns {string} - Formatted date (e.g., "Mon, Apr 1, 2024")
+ */
 const formatDate = (dateStr) =>
   new Date(dateStr).toLocaleDateString(undefined, {
     weekday: 'short',
@@ -25,12 +39,17 @@ const formatDate = (dateStr) =>
     day: 'numeric',
   });
 
-// Helper: Save list to localStorage
+/**
+ * Saves the current game list to localStorage.
+ */
 const saveGames = () => {
   localStorage.setItem('gameList', JSON.stringify(gameList));
 };
 
-// Render game list
+/**
+ * Renders all game entries sorted by the selected method (name, rating, date).
+ * Uses innerHTML to update the DOM.
+ */
 const renderGames = () => {
   const sorted = [...gameList];
   const sortFunctions = {
@@ -54,7 +73,11 @@ const renderGames = () => {
   `).join('');
 };
 
-// Validate form and return game object or null
+/**
+ * Validates user input and returns a game object if valid.
+ * If not valid, displays inline error messages and returns null.
+ * @returns {Object|null} Game object with name, rating, date, review, and ID
+ */
 const getValidatedGame = () => {
   let valid = true;
   const name = gameNameInput.value.trim();
@@ -79,7 +102,10 @@ const getValidatedGame = () => {
   } : null;
 };
 
-// Handle form submit
+/**
+ * Handles form submission. Adds new game or updates existing one based on editingId.
+ * Resets the form and re-renders the game list.
+ */
 gameForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const game = getValidatedGame();
@@ -97,7 +123,10 @@ gameForm.addEventListener('submit', (e) => {
   gameForm.reset();
 });
 
-// Delete or Edit game
+/**
+ * Handles clicks on "Edit" and "Delete" buttons.
+ * Edit pre-fills form with game info. Delete removes entry.
+ */
 gameListContainer.addEventListener('click', (e) => {
   const id = Number(e.target.dataset.id);
   if (e.target.classList.contains('delete-btn')) {
@@ -118,8 +147,10 @@ gameListContainer.addEventListener('click', (e) => {
   }
 });
 
-// Sort change
+/**
+ * Triggers re-render of games whenever sorting option changes.
+ */
 sortSelect.addEventListener('change', renderGames);
 
-// Initial render
+// Initial page render
 renderGames();
