@@ -14,6 +14,7 @@ const dateError = document.querySelector('#dateError');
 
 // Load game list or start empty
 let gameList = JSON.parse(localStorage.getItem('gameList')) || [];
+let editingId = null;
 
 // Helper: Format date
 const formatDate = (dateStr) =>
@@ -32,14 +33,12 @@ const saveGames = () => {
 // Render game list
 const renderGames = () => {
   const sorted = [...gameList];
-
-  if (sortSelect.value === 'name') {
-    sorted.sort((a, b) => a.name.localeCompare(b.name));
-  } else if (sortSelect.value === 'rating') {
-    sorted.sort((a, b) => b.rating - a.rating);  
-  } else if (sortSelect.value === 'date') {
-    sorted.sort((a, b) => new Date(a.date) - new Date(b.date));
-  }
+  const sortFunctions = {
+    name: (a, b) => a.name.localeCompare(b.name),
+    rating: (a, b) => b.rating - a.rating,
+    date: (a, b) => new Date(a.date) - new Date(b.date)
+  };
+  sorted.sort(sortFunctions[sortSelect.value]);
 
   gameListContainer.innerHTML = sorted.map(game => `
     <div class="game-card">
@@ -49,6 +48,7 @@ const renderGames = () => {
       </div>
       <p>Rating: ${game.rating}/10</p>
       <p>${game.review || ''}</p>
+      <button class="edit-btn" data-id="${game.id}">Edit</button>
       <button class="delete-btn" data-id="${game.id}">Delete</button>
     </div>
   `).join('');
@@ -57,7 +57,6 @@ const renderGames = () => {
 // Validate form and return game object or null
 const getValidatedGame = () => {
   let valid = true;
-
   const name = gameNameInput.value.trim();
   const rating = parseFloat(gameRatingInput.value);
   const date = startDateInput.value;
@@ -72,7 +71,7 @@ const getValidatedGame = () => {
   if (!date) valid = false;
 
   return valid ? {
-    id: Date.now(),
+    id: editingId ?? Date.now(),
     name,
     rating,
     date,
@@ -80,25 +79,42 @@ const getValidatedGame = () => {
   } : null;
 };
 
-// Add game
+// Handle form submit
 gameForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  const newGame = getValidatedGame();
-  if (!newGame) return;
+  const game = getValidatedGame();
+  if (!game) return;
 
-  gameList.push(newGame);
+  if (editingId) {
+    gameList = gameList.map(g => g.id === editingId ? game : g);
+    editingId = null;
+  } else {
+    gameList.push(game);
+  }
+
   saveGames();
   renderGames();
   gameForm.reset();
 });
 
-// Delete game
+// Delete or Edit game
 gameListContainer.addEventListener('click', (e) => {
+  const id = Number(e.target.dataset.id);
   if (e.target.classList.contains('delete-btn')) {
-    const id = Number(e.target.dataset.id);
     gameList = gameList.filter(game => game.id !== id);
     saveGames();
     renderGames();
+  }
+
+  if (e.target.classList.contains('edit-btn')) {
+    const game = gameList.find(g => g.id === id);
+    if (game) {
+      editingId = id;
+      gameNameInput.value = game.name;
+      gameRatingInput.value = game.rating;
+      startDateInput.value = game.date;
+      reviewNotesInput.value = game.review || '';
+    }
   }
 });
 
